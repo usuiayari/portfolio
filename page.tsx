@@ -1,6 +1,7 @@
 "use client"; // データ取得などのためにクライアントコンポーネントとしてマークします
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image'; // Next.jsのImageコンポーネントをインポート
 
 // --- 型定義 ---
 type Repo = {
@@ -65,22 +66,22 @@ const ProfileHeader = ({ presence }: { presence: LanyardData | null }) => {
     name: "Ayari",
     title: "Web Developer / Software Engineer",
     bio: "適当に勉強しながら開発をしています。",
-    avatarUrl: "/avatar_placeholder.png", // publicフォルダに画像を配置した場合
     githubUrl: "https://github.com/usuiayari",
     twitterUrl: "https://twitter.com/nno_yate",
-    youtubeUrl: "https://youtube.com/channel/Ayakaq",
+    youtubeUrl: "https://youtube.com/@Ayakaq",
   };
   // ▲▲▲ プロフィール情報を編集 ▲▲▲
 
   return (
     <header className="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-10">
       <div className="animate-on-scroll" style={{ transitionDelay: '100ms' }}>
-        <img
-          src="https://placehold.co/128x128/1F2937/FFFFFF?text=Avatar"
+        <Image
+          src="/avatar.png" // publicフォルダに配置した画像へのパス
           alt="プロフィール画像"
           width={128}
           height={128}
           className="rounded-full ring-4 ring-gray-700"
+          priority // ページの主要コンテンツなので優先的に読み込む
         />
       </div>
       <div className="text-center md:text-left">
@@ -88,7 +89,6 @@ const ProfileHeader = ({ presence }: { presence: LanyardData | null }) => {
         <p className="mt-2 text-xl text-gray-300 animate-on-scroll" style={{ transitionDelay: '300ms' }}>{profile.title}</p>
         <p className="mt-4 text-gray-400 max-w-md animate-on-scroll" style={{ transitionDelay: '400ms' }}>{profile.bio}</p>
         
-        {/* Discordステータス表示コンポーネントをここに追加 */}
         <DiscordPresence presence={presence} />
 
         <div className="mt-6 flex justify-center md:justify-start space-x-5 animate-on-scroll" style={{ transitionDelay: '600ms' }}>
@@ -108,7 +108,7 @@ const ProfileHeader = ({ presence }: { presence: LanyardData | null }) => {
 };
 
 
-// 2. Discordステータス表示コンポーネント (表示に特化)
+// 2. Discordステータス表示コンポーネント
 const DiscordPresence = ({ presence }: { presence: LanyardData | null }) => {
     if (!presence) {
         return (
@@ -133,7 +133,7 @@ const DiscordPresence = ({ presence }: { presence: LanyardData | null }) => {
         >
             <div className="flex items-center">
                 <div className="relative">
-                    <img src={avatarUrl} alt={discord_user.username} className="w-12 h-12 rounded-full" />
+                    <Image src={avatarUrl} alt={discord_user.username} width={48} height={48} className="rounded-full" />
                     <span className={`status-dot status-${discord_status}`}></span>
                 </div>
                 <div className="ml-4 text-left">
@@ -186,7 +186,7 @@ const ProjectCard = ({ repo, index }: { repo: Repo, index: number }) => {
   );
 };
 
-// 4. GitHubプロジェクトセクションコンポーネント (データ表示に特化)
+// 4. GitHubプロジェクトセクションコンポーネント
 const GitHubProjects = ({ repos, loading, error }: { repos: Repo[], loading: boolean, error: string | null }) => {
     return (
       <section className="mt-16 md:mt-24">
@@ -209,7 +209,6 @@ const GitHubProjects = ({ repos, loading, error }: { repos: Repo[], loading: boo
 // 5. スキルセクションコンポーネント
 const Skills = () => {
   // ▼▼▼ アイコンのURLやスキル名を自由に編集してください ▼▼▼
-  // アイコンは https://simpleicons.org/ などで探せます。
   const minecraftSkills = [
     { name: 'Minecraftサーバー運営', iconUrl: 'https://img.icons8.com/fluency/96/server.png' },
     { name: 'Minecraftプラグイン開発', iconUrl: 'https://img.icons8.com/fluency/96/puzzle.png' },
@@ -235,7 +234,7 @@ const Skills = () => {
             className="col-span-2 md:col-span-3 flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-700 animate-on-scroll card-hover-effect"
             style={{ transitionDelay: `${100 + index * 50}ms` }}
           >
-            <img src={skill.iconUrl} alt={`${skill.name} icon`} className="w-10 h-10" />
+            <Image src={skill.iconUrl} alt={`${skill.name} icon`} width={40} height={40} />
             <p className="mt-3 text-sm font-medium text-gray-300">{skill.name}</p>
           </div>
         ))}
@@ -245,7 +244,7 @@ const Skills = () => {
             className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-700 animate-on-scroll card-hover-effect"
             style={{ transitionDelay: `${200 + index * 50}ms` }}
           >
-            <img src={skill.iconUrl} alt={`${skill.name} icon`} className="w-10 h-10" />
+            <img src={skill.iconUrl} alt={`${skill.name} icon`} width={40} height={40} />
             <p className="mt-3 text-sm font-medium text-gray-300">{skill.name}</p>
           </div>
         ))}
@@ -267,10 +266,10 @@ const Footer = () => {
 
 // --- メインページ ---
 export default function PortfolioPage() {
-    // .env.localから環境変数を読み込みます
-    // NEXT_PUBLIC_GITHUB_USERNAME, NEXT_PUBLIC_DISCORD_USER_ID
-    const GITHUB_USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME || 'usuiayari';
-    const DISCORD_USER_ID = process.env.NEXT_PUBLIC_DISCORD_USER_ID || '1168902836478804030';
+    // ▼▼▼ ご自身のGitHubユーザー名とDiscord IDに書き換えてください ▼▼▼
+    const GITHUB_USERNAME = 'usuiayari'; // 例: 'google'
+    const DISCORD_USER_ID = '1168902836478804030'; // 例: '123456789012345678'
+    // ▲▲▲ ここまで ▲▲▲
 
     const [repos, setRepos] = useState<Repo[]>([]);
     const [githubLoading, setGithubLoading] = useState(true);
@@ -287,22 +286,26 @@ export default function PortfolioPage() {
           }
           const data: Repo[] = await response.json();
           setRepos(data);
-        } catch (err: any) {
-          setGithubError(err.message);
+        } catch (err) {
+          if (err instanceof Error) {
+            setGithubError(err.message);
+          } else {
+            setGithubError(String(err));
+          }
         } finally {
           setGithubLoading(false);
         }
       };
-      if (GITHUB_USERNAME && GITHUB_USERNAME !== 'usuiayari') {
+      if (GITHUB_USERNAME) {
         fetchGitHubProjects();
       } else {
-        setGithubLoading(false); // ユーザー名が設定されていない場合はローディングを終了
+        setGithubLoading(false);
       }
     }, [GITHUB_USERNAME]);
 
     // Discordデータ取得のロジック
     useEffect(() => {
-        if (!DISCORD_USER_ID || DISCORD_USER_ID === '1168902836478804030') return;
+        if (!DISCORD_USER_ID) return;
 
         const socket = new WebSocket('wss://api.lanyard.rest/socket');
 
@@ -373,7 +376,7 @@ export default function PortfolioPage() {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .card-hover-effect:hover {
-            transform: translateY(-5px);
+            transform: translateY(-px);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
 
